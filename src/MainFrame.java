@@ -1,18 +1,29 @@
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author alu20925473g
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    /**
-     * Creates new form MainFrame
-     */
+    BufferedReader inputStream = null;
+    PrintWriter outputStream = null;
+
     public MainFrame() {
         initComponents();
     }
@@ -27,84 +38,131 @@ public class MainFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jToolBar1 = new javax.swing.JToolBar();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        btnSave = new javax.swing.JButton();
+        btnOpen = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        textArea = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
+        mnFile = new javax.swing.JMenu();
+        miNew = new javax.swing.JMenuItem();
+        miOpenFile = new javax.swing.JMenuItem();
+        miSave = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem4 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        jMenu3 = new javax.swing.JMenu();
+        miExit = new javax.swing.JMenuItem();
+        mnEdit = new javax.swing.JMenu();
+        mnAbout = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jToolBar1.setRollover(true);
 
-        jButton1.setText("jButton1");
-        jButton1.setFocusable(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton1);
+        btnSave.setText("Save");
+        btnSave.setFocusable(false);
+        btnSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnSave);
 
-        jButton2.setText("jButton2");
-        jButton2.setFocusable(false);
-        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton2);
+        btnOpen.setText("Open");
+        btnOpen.setFocusable(false);
+        btnOpen.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnOpen.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(btnOpen);
 
         getContentPane().add(jToolBar1, java.awt.BorderLayout.PAGE_START);
 
-        jLabel1.setText("jLabel1");
-        getContentPane().add(jLabel1, java.awt.BorderLayout.PAGE_END);
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        textArea.setColumns(20);
+        textArea.setRows(5);
+        jScrollPane1.setViewportView(textArea);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        jMenu1.setText("File");
+        mnFile.setText("File");
 
-        jMenuItem1.setText("New");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        miNew.setText("New");
+        miNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                miNewActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        mnFile.add(miNew);
 
-        jMenuItem2.setText("Open File");
-        jMenu1.add(jMenuItem2);
+        miOpenFile.setText("Open File");
+        miOpenFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miOpenFileActionPerformed(evt);
+            }
+        });
+        mnFile.add(miOpenFile);
 
-        jMenuItem3.setText("Save");
-        jMenu1.add(jMenuItem3);
-        jMenu1.add(jSeparator1);
+        miSave.setText("Save");
+        mnFile.add(miSave);
+        mnFile.add(jSeparator1);
 
-        jMenuItem4.setText("Exit");
-        jMenu1.add(jMenuItem4);
+        miExit.setText("Exit");
+        mnFile.add(miExit);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(mnFile);
 
-        jMenu2.setText("Edit");
-        jMenuBar1.add(jMenu2);
+        mnEdit.setText("Edit");
+        jMenuBar1.add(mnEdit);
 
-        jMenu3.setText("About");
-        jMenuBar1.add(jMenu3);
+        mnAbout.setText("About");
+        jMenuBar1.add(mnAbout);
 
         setJMenuBar(jMenuBar1);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void miNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miNewActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_miNewActionPerformed
+
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void miOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miOpenFileActionPerformed
+        // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        chooser.showOpenDialog(null);
+        File f = chooser.getSelectedFile();
+        String filename = f.getAbsolutePath();
+
+        textArea.setText(filename);
+        
+        String textfile = "";
+        try {
+            inputStream = new BufferedReader(new FileReader(f));
+            String line;
+
+            while ((line = inputStream.readLine()) != null) {
+                System.out.println(line);
+                textfile += line + "\n";
+            }
+
+        } catch (IOException ex) {
+            System.err.println("Error leyendo el fichero");
+        } finally {
+            if (inputStream != null) {
+
+                try {
+                    inputStream.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+            //textArea.setText(textfile);
+        }
+        
+
+    }//GEN-LAST:event_miOpenFileActionPerformed
 
     /**
      * @param args the command line arguments
@@ -142,20 +200,19 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
+    private javax.swing.JButton btnOpen;
+    private javax.swing.JButton btnSave;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JMenuItem miExit;
+    private javax.swing.JMenuItem miNew;
+    private javax.swing.JMenuItem miOpenFile;
+    private javax.swing.JMenuItem miSave;
+    private javax.swing.JMenu mnAbout;
+    private javax.swing.JMenu mnEdit;
+    private javax.swing.JMenu mnFile;
+    private javax.swing.JTextArea textArea;
     // End of variables declaration//GEN-END:variables
 }
