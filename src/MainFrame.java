@@ -1,6 +1,7 @@
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -8,7 +9,10 @@ import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.undo.UndoManager;
+import javax.xml.bind.Marshaller;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -20,12 +24,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author alu20925473g
  */
 public class MainFrame extends javax.swing.JFrame {
-
-    BufferedReader inputStream = null;
-    PrintWriter outputStream = null;
-
+    
+    UndoManager undoManager = new UndoManager();
+    
     public MainFrame() {
         initComponents();
+        initMyComponents();
     }
 
     /**
@@ -50,6 +54,8 @@ public class MainFrame extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         miExit = new javax.swing.JMenuItem();
         mnEdit = new javax.swing.JMenu();
+        doUndo = new javax.swing.JMenuItem();
+        doRedo = new javax.swing.JMenuItem();
         mnAbout = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -71,6 +77,11 @@ public class MainFrame extends javax.swing.JFrame {
         btnOpen.setFocusable(false);
         btnOpen.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnOpen.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOpenActionPerformed(evt);
+            }
+        });
         jToolBar1.add(btnOpen);
 
         getContentPane().add(jToolBar1, java.awt.BorderLayout.PAGE_START);
@@ -100,15 +111,42 @@ public class MainFrame extends javax.swing.JFrame {
         mnFile.add(miOpenFile);
 
         miSave.setText("Save");
+        miSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miSaveActionPerformed(evt);
+            }
+        });
         mnFile.add(miSave);
         mnFile.add(jSeparator1);
 
         miExit.setText("Exit");
+        miExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miExitActionPerformed(evt);
+            }
+        });
         mnFile.add(miExit);
 
         jMenuBar1.add(mnFile);
 
         mnEdit.setText("Edit");
+
+        doUndo.setText("Undo");
+        doUndo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doUndoActionPerformed(evt);
+            }
+        });
+        mnEdit.add(doUndo);
+
+        doRedo.setText("Redo");
+        doRedo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doRedoActionPerformed(evt);
+            }
+        });
+        mnEdit.add(doRedo);
+
         jMenuBar1.add(mnEdit);
 
         mnAbout.setText("About");
@@ -122,47 +160,119 @@ public class MainFrame extends javax.swing.JFrame {
     private void miNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miNewActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_miNewActionPerformed
-
+    private void saveFile() {
+        JFileChooser saveFile = new JFileChooser();
+        if (saveFile.showSaveDialog(saveFile) == JFileChooser.APPROVE_OPTION) {
+            File savefile = saveFile.getSelectedFile();
+            PrintWriter outputStream = null;
+            if (savefile.exists()) {
+                int n = JOptionPane.showConfirmDialog(this, "The file already exist, do you want to remove it?", " do you want to remove it?", JOptionPane.YES_NO_OPTION);
+                if (n == JOptionPane.YES_OPTION) {
+                    try {
+                        outputStream = new PrintWriter(new FileWriter(savefile));
+                        outputStream.print(textArea.getText());
+                    } catch (IOException ex) {
+                        Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    } finally {
+                        
+                        if (outputStream != null) {
+                            outputStream.close();
+                        }
+                    }
+                }
+                
+            }
+            
+        }
+    }
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // TODO add your handling code here:
+        saveFile();
     }//GEN-LAST:event_btnSaveActionPerformed
+    private void addUndoRedo() {
+        textArea.getDocument().addUndoableEditListener(undoManager);
+        
+    }
 
-    private void miOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miOpenFileActionPerformed
-        // TODO add your handling code here:
+    private void openAndReadFile() {
+        BufferedReader inputStream = null;
         JFileChooser chooser = new JFileChooser();
         chooser.showOpenDialog(null);
-        File f = chooser.getSelectedFile();
-        String filename = f.getAbsolutePath();
-
-        textArea.setText(filename);
         
+        File f = chooser.getSelectedFile();
+        // String filename = f.getAbsolutePath();
+
+        // textArea.setText(filename);
         String textfile = "";
         try {
             inputStream = new BufferedReader(new FileReader(f));
             String line;
-
+            
             while ((line = inputStream.readLine()) != null) {
                 System.out.println(line);
                 textfile += line + "\n";
             }
-
+            
         } catch (IOException ex) {
             System.err.println("Error leyendo el fichero");
+            
         } finally {
             if (inputStream != null) {
-
+                
                 try {
                     inputStream.close();
+                    textArea.setText(textfile);
                 } catch (IOException ex) {
-                    Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    ex.printStackTrace();
                 }
-
+                
             }
-            //textArea.setText(textfile);
+            
         }
+        
+    }
+    private void miOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miOpenFileActionPerformed
+        // TODO add your handling code here:
+        openAndReadFile();
         
 
     }//GEN-LAST:event_miOpenFileActionPerformed
+
+    private void btnOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenActionPerformed
+        // TODO add your handling code here:
+        openAndReadFile();
+    }//GEN-LAST:event_btnOpenActionPerformed
+
+    private void miSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miSaveActionPerformed
+        // TODO add your handling code here:
+        saveFile();
+    }//GEN-LAST:event_miSaveActionPerformed
+
+    private void doUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doUndoActionPerformed
+        // TODO add your handling code here:
+        undoManager.undo();
+    }//GEN-LAST:event_doUndoActionPerformed
+
+    private void doRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doRedoActionPerformed
+        // TODO add your handling code here:
+        undoManager.redo();
+        
+    }//GEN-LAST:event_doRedoActionPerformed
+
+    private void miExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miExitActionPerformed
+        // TODO add your handling code here:
+        int n = JOptionPane.showConfirmDialog(this, "The file isn't saved, do you want to save it?", "", JOptionPane.YES_NO_CANCEL_OPTION);
+        if (n == JOptionPane.YES_OPTION) {
+            saveFile();
+        }
+        if (n == JOptionPane.NO_OPTION) {
+            System.exit(0);
+        }
+        if (n == JOptionPane.CANCEL_OPTION) {
+            
+        }
+        
+    }//GEN-LAST:event_miExitActionPerformed
 
     /**
      * @param args the command line arguments
@@ -202,9 +312,11 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnOpen;
     private javax.swing.JButton btnSave;
+    private javax.swing.JMenuItem doRedo;
+    private javax.swing.JMenuItem doUndo;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JMenuItem miExit;
     private javax.swing.JMenuItem miNew;
@@ -215,4 +327,9 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu mnFile;
     private javax.swing.JTextArea textArea;
     // End of variables declaration//GEN-END:variables
+
+    private void initMyComponents() {
+        addUndoRedo();
+    }
+    
 }
