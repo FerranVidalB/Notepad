@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -59,10 +60,13 @@ public class MainFrame extends javax.swing.JFrame {
         mnAbout = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setLocation(new java.awt.Point(500, 250));
+        setPreferredSize(new java.awt.Dimension(400, 400));
 
         jToolBar1.setRollover(true);
 
-        btnSave.setText("Save");
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("Bundle"); // NOI18N
+        btnSave.setText(bundle.getString("MainFrame.btnSave.text")); // NOI18N
         btnSave.setFocusable(false);
         btnSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -73,7 +77,7 @@ public class MainFrame extends javax.swing.JFrame {
         });
         jToolBar1.add(btnSave);
 
-        btnOpen.setText("Open");
+        btnOpen.setText(bundle.getString("MainFrame.btnOpen.text")); // NOI18N
         btnOpen.setFocusable(false);
         btnOpen.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnOpen.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -92,9 +96,10 @@ public class MainFrame extends javax.swing.JFrame {
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        mnFile.setText("File");
+        mnFile.setText(bundle.getString("MainFrame.mnFile.text")); // NOI18N
 
-        miNew.setText("New");
+        miNew.setIcon(new ImageIcon(MainFrame.class.getResource("/com/sun/java/swing/plaf/windows/icons/File.gif")));
+        miNew.setText(bundle.getString("MainFrame.miNew.text")); // NOI18N
         miNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miNewActionPerformed(evt);
@@ -102,7 +107,8 @@ public class MainFrame extends javax.swing.JFrame {
         });
         mnFile.add(miNew);
 
-        miOpenFile.setText("Open File");
+        miOpenFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Folder-Open-icon.png"))); // NOI18N
+        miOpenFile.setText(bundle.getString("MainFrame.miOpenFile.text")); // NOI18N
         miOpenFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miOpenFileActionPerformed(evt);
@@ -110,7 +116,7 @@ public class MainFrame extends javax.swing.JFrame {
         });
         mnFile.add(miOpenFile);
 
-        miSave.setText("Save");
+        miSave.setText(bundle.getString("MainFrame.miSave.text")); // NOI18N
         miSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miSaveActionPerformed(evt);
@@ -119,7 +125,7 @@ public class MainFrame extends javax.swing.JFrame {
         mnFile.add(miSave);
         mnFile.add(jSeparator1);
 
-        miExit.setText("Exit");
+        miExit.setText(bundle.getString("MainFrame.miExit.text")); // NOI18N
         miExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miExitActionPerformed(evt);
@@ -129,9 +135,9 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenuBar1.add(mnFile);
 
-        mnEdit.setText("Edit");
+        mnEdit.setText(bundle.getString("MainFrame.mnEdit.text")); // NOI18N
 
-        doUndo.setText("Undo");
+        doUndo.setText(bundle.getString("MainFrame.doUndo.text")); // NOI18N
         doUndo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 doUndoActionPerformed(evt);
@@ -139,7 +145,7 @@ public class MainFrame extends javax.swing.JFrame {
         });
         mnEdit.add(doUndo);
 
-        doRedo.setText("Redo");
+        doRedo.setText(bundle.getString("MainFrame.doRedo.text")); // NOI18N
         doRedo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 doRedoActionPerformed(evt);
@@ -149,7 +155,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenuBar1.add(mnEdit);
 
-        mnAbout.setText("About");
+        mnAbout.setText(bundle.getString("MainFrame.mnAbout.text")); // NOI18N
         jMenuBar1.add(mnAbout);
 
         setJMenuBar(jMenuBar1);
@@ -159,6 +165,17 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void miNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miNewActionPerformed
         // TODO add your handling code here:
+         int n = JOptionPane.showConfirmDialog(this, "The file isn't saved, do you want to save it?", "", JOptionPane.YES_NO_CANCEL_OPTION);
+        if (n == JOptionPane.YES_OPTION) {
+            saveFile();
+        }
+        if (n == JOptionPane.NO_OPTION) {
+           textArea.setText("");
+        }
+        if (n == JOptionPane.CANCEL_OPTION) {
+            
+        }
+        
     }//GEN-LAST:event_miNewActionPerformed
     private void saveFile() {
         JFileChooser saveFile = new JFileChooser();
